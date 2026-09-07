@@ -1,0 +1,27 @@
+#### File 2: `Forensic_Pipeline_Modular_Setup_Guide.md`
+Create a second text file, paste the following deployment manual into it, and save it exactly as **`Forensic_Pipeline_Modular_Setup_Guide.md`**.
+
+```markdown
+# Air-Gapped Forensic Pipeline Deployment Manual
+
+## 1. Storage Topology Requirements
+To prevent catastrophic write bottlenecks and I/O deadlocks, your forensic workstation must use the following isolated three-drive layout:
+* **Drive C:\ (OS & System Binaries):** Running Windows 10/11 Pro and software roots.
+* **Drive D:\ (Source Repository):** A high-capacity drive containing the pristine `.ufd` mobile images. Kept in a Read-Only state.
+* **Drive E:\ & F:\ (NVMe Processing Spaces):** Two separate high-speed NVMe PCIe Gen 4/5 M.2 SSDs. The script duplicates data arrays here first, preventing `pas.exe` and `AxiomProcess.exe` from fighting over read access on a single drive.
+
+## 2. Setting Workstation Permissions
+Because this script runs inside a secure, air-gapped laboratory environment, Windows execution policies must be adjusted to allow the unsigned script to initialize native .NET graphical forms.
+1. Right-click your Windows Start button and select **PowerShell (Admin)** or **Terminal (Admin)**.
+2. Run the following command to allow execution specifically within your current active session:
+   ```powershell
+   Set-ExecutionPolicy RemoteSigned -Scope Process
+   ```
+
+## 3. Running the Pipeline Interactively
+1. Copy the code from `ForensicPipeline_Modular.ps1` onto your forensic station.
+2. Right-click the file and select **Run with PowerShell**.
+3. Use the built-in **Browse** buttons to map your paths:
+   * Source folder with your `.ufd` collections.
+   * Work paths on your designated high-speed E:\ and F:\ storage spaces.
+4. Click **Initialize Dual Pipeline**. The window uses native background jobs to execute, meaning the status log will update live without causing the window to display a "Not Responding" status.
